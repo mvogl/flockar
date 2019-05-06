@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!-- Created by chris.lowery@fasility.com Free to reuse. -->
+<!-- Thanks Chris, midified by Markus Vogl and Margarita Benitez-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <title>A-Frame Minimal AR</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, minimal-ui">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <!--
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    -->
+    <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+    <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
+
+    <script src="https://cdn.rawgit.com/archilogic-com/aframe-gblock/6498b71d/dist/gblock.js"></script>
+
+  
+
+    <script>
+
+        addShortcuts = function () {
+            // Set up some convenience functions, just to reduce typing.
+            // find and replace with standard functions if desired. 
+
+            $ = function (id) {
+                return document.getElementById(id);
+            }
+            dce = function (tag) {
+                return document.createElement(tag);
+            }
+            dqs = function (selector) {
+                return document.querySelector(selector);
+            }
+            dqsa = function (selector) {
+                return document.querySelectorAll(selector);
+            }
+
+            Element.prototype.sa = function (a1, a2, a3) {
+                this.setAttribute(a1, a2, a3);
+            }
+            Element.prototype.ga = function (attr) {
+                this.getAttribute(attr);
+            }
+
+            Element.prototype.ac = function (child) {
+                this.appendChild(child);
+            }
+            Element.prototype.rc = function (child) {
+                this.removeChild(child);
+            }
+
+            log = function (object) {
+                console.log(object + ": ", object);
+            }
+
+            urlify = function (url) {
+                return "url(" + url + ")";
+            }
+
+            now = function () {
+                return new Date().getTime();
+            }
+
+        }
+
+        // -- begin app  
+
+        addShortcuts();
+
+        AFRAME.registerComponent("startup", {
+            schema: {
+            },
+            init: function () {
+                startup();
+            },
+            tick: function () {
+            }
+        });
+
+        startup = function () {
+            console.log("started up.");
+
+            var scene = document.querySelector("a-scene");
+            scene.addEventListener("enter-vr", function () {
+                console.log("we're in VR!");
+                document.getElementById("image-input").style.display = "none";
+            });
+            scene.addEventListener("exit-vr", function () {
+                console.log("we left VR!");
+                document.getElementById("image-input").style.display = "inline";
+            });
+
+            getVideo();
+        }
+
+        getVideo = function () {
+            var constraints = {
+                audio: false,
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: "environment"
+                }
+            }
+            var promise = navigator.mediaDevices.getUserMedia(constraints)
+                .then(function (stream) {
+                    /* use the stream */
+                    console.log("video stream is ready: ", stream);
+                    var video = document.createElement("video");
+                    video.id = "video";
+                    // attributes must be set for the promise to resolve on iOS:
+                    video.setAttribute("crossorigin", "anonymous");
+                    video.setAttribute("playsinline", "");
+                    video.setAttribute("webkit-playsinline", "");
+
+                    video.srcObject = stream; // connect mediaStream to element
+                    //video.src = window.URL.createObjectURL(stream); // fallback
+                    video.onloadedmetadata = function (e) {
+                        videoReady();
+                    };
+                    video.style.display = "none";
+                    document.body.appendChild(video);
+                    // setupBillboard();
+                })
+                .catch(function (err) {
+                    /* handle the error */
+                    console.log("couldn't get video stream:", err)
+                });
+        }
+
+        videoReady = function () {
+            console.log("video is ready, let's go.");
+            video.play();
+        }
+
+        setupBillboard = function () {
+            var v = dqs("video");
+            var cam = dqs("[camera]");
+            //var b = $("billboard");
+            var b = dce("a-plane");
+            b.id = "cardboard-billboard";
+            b.sa("position", "0 0 -.27");
+            b.sa("scale", ".1 .12 1");
+            b.sa("opacity", 0.9);
+            b.sa("width", 4);
+            b.sa("height", 3);
+            b.sa("src", "#video");
+            b.sa("material", "shader", "flat");
+            cam.ac(b);
+        }
+
+        // image upload section 
+
+        loadChange = function (el) {
+            console.log("loaded! input:", el);
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                var target;
+                var readIntoCurvedImage = true;
+                if (readIntoCurvedImage) {
+                    target = $("curved-image");
+                    target.sa('material', "wireframe", false);
+                    target.sa('material', "side", "double");
+                    target.sa('material', "color", "white");
+                    target.sa('material', "shader", "flat");
+                    target.sa('material', "opacity", "0.92");
+                    target.sa('src', e.target.result);
+                } else {
+                    target = document.getElementsByClassName("croquis-layer")[0];
+                    target.style.backgroundImage = urlify(e.target.result);
+                }
+
+                /*
+                target.setAttribute('color', "white");
+
+                var wire = document.getElementById("wire");
+                wire.setAttribute("visible", false);
+
+                var credits = document.getElementById("credits")
+                credits.style.display = "none";
+                */
+            }
+            reader.readAsDataURL(el.files[0]);
+        }
+
+        clickLogo = function () {
+            document.getElementById("ui").style.display = "none";
+            var gadunk = $("gadunk");
+            gadunk.play();
+        }
+
+    </script>
+</head>
+
+
+<body>
+
+    <audio id="gadunk">
+        <source src="https://cdn.glitch.com/ad895f42-2e37-478a-93ba-fccd72c31f08%2FgadunkBite.mp3?1547758844844" type="audio/mpeg">
+    </audio>
+    <audio id="promise-me">
+        <source src="https://cdn.glitch.com/ad895f42-2e37-478a-93ba-fccd72c31f08%2Fdelectatio_promise-me.mp3?1547758845068"
+            type="audio/mpeg">
+    </audio>
+ 
+    <div id="ui" onclick="clickLogo()">
+        <h1>Hello!<br />This is your VR title card.</h1>
+       <!--<img src="https://cdn.glitch.com/34828522-1f62-4fd6-9641-607dd6c5b915%2Fflockar_tile_w.png?1547927992610"/>-->
+    </div>
+    <!--
+   <div id="ii">
+        <input id="image-input" type="file" accept="image/*" onchange="loadChange(this)">
+    </div>-->
+  
+  <script>
+        clickBox = function () {
+            console.log('hi');
+            document.querySelector("a-box").setAttribute("color", "purple");
+        }
+    </script>
+ 
+  
+    <a-scene id="scene" startup>
+
+      <!--<a-entity id="dress" position="0 1 -4" gblock="https://poly.google.com/view/eCRz1gT97kK" rotation="0 0 0"></a-entity>-->
+      
+     
+      <!-- 
+      Hosted Assest test since it doesn't work with poly
+      <a-assets>
+      <a-asset-item id="tree" src="https://codedfashion.com/gltf/tower_test_2.gltf"></a-asset-item>
+      </a-assets>
+      <a-entity gltf-model="#tree" position="0 1 -10" scale="0.5 0.5 0.5"></a-entity>-->
+
+   
+        <!--
+        <a-entity onclick="clickBox()"  id="dress" position="0 1 -4" gblock="https://poly.google.com/view/4S9-ge8ut8R" scale="0.0018 0.0018 0.0018"
+            rotation="0 0 0"></a-entity>
+         -->
+      
+        <a-entity id="dark_tower" position="0 0 -10" gblock="https://poly.google.com/view/4qQvyq9pn3P" scale="60 60 60" rotation="-90 0 0"></a-entity>
+      
+      <a-entity id="white_tower" position="0 0 0" gblock="https://poly.google.com/view/eCRz1gT97kK" scale="0.2 0.2 0.2" rotation="0 0 0"></a-entity>
+
+      
+        <!--<a-cylinder id="wire-cylinder" color="white" material="transparent: true; wireframe: true;" opacity="0.2" position="0 1.42 0" height="7" radius="2.5" scale="1 1 1"></a-cylinder>-->
+
+        <!--<a-curvedimage id="curved-image" color="blue" thetalength="90" openended="true" material="wireframe:true; shader: flat;"
+            opacity="0.2" position="0 1.42 0" height="5" radius="2.5" scale="0.9 0.9 0.9" geometry="thetaStart:120;thetaLength:120"></a-curvedimage>-->
+
+        <!--<a-box onclick="clickBox()" position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9" shadow></a-box>-->
+
+        <a-plane id="floor" rotation="-90 0 0" position="0 0.01 0" opacity="0.2" width="100" height="100"
+            segments-width="100" segments-height="100" material="wireframe: true; repeat: 100 100"></a-plane>
+
+        <a-plane id="checker" rotation="-90 0 0" opacity="0.2" width="100" height="100" material="src: https://cdn.glitch.com/ad895f42-2e37-478a-93ba-fccd72c31f08%2Fchecker.png?1547758836608; repeat: 100 100"></a-plane>
+
+        <a-entity light="color:#eee;type:ambient"></a-entity>
+
+        <a-entity light="intensity:0.9;castShadow:true" position="-0.5 1 1"></a-entity>
+
+        <a-camera id="camera" wasd-controls look-controls>
+            <a-cursor scale="2 2 2" color="white" opacity="0.3">
+            </a-cursor>
+        </a-camera>
+
+    </a-scene>
+
+</body>
+
+</html>

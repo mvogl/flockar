@@ -1,0 +1,76 @@
+/* CSS files add styling rules to your content */
+
+#ui {
+            /*position: absolute;*/
+            margin: 200px auto; 
+            /*top: 125vh;
+            left: 5vw;*/
+            width: 40vw;
+            height: 30vh;
+            /*background-color: white;*/
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            border-radius: 18px;
+  
+        }
+
+#ii {
+            position: absolute;
+            left: 18px;
+            bottom: 18px;
+            z-index: 10;
+            font-family: sans-serif;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px;
+            font-size: 14px;
+            color: white;
+            background-color: gray;
+        }
+
+#load-button {
+            cursor: pointer;
+            border: 1px solid black;
+            padding: 2px;
+            margin: 3px;
+            border-radius: 12px;
+            background: green;
+            color: white;
+            text-align: center;
+            user-select: none;
+        }
+
+
+
+body {
+            margin: 0px;
+            font-family: Monospace;
+            background: blue;
+        }
+
+video {
+            display: block !important;
+            opacity: .8 !important;
+            position: absolute;
+            top: 0px;
+
+            width: 100vw !important;
+            height: 100vh !important;
+            object-fit: cover;
+        }
+
+  #scene {
+            z-index: 2;
+        }
+
+  #bg-test {
+            background-color: gray;
+            z-index: 3;
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            display: none;
+        }

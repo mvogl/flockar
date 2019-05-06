@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!-- Some of this code created by chris.lowery@fasility.com Free to reuse. -->
+<!-- Thanks Chris, modified by Markus Vogl and Margarita Benitez-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <title>FlockAR</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no, minimal-ui">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <!--
+    <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+    -->
+    <script src="https://aframe.io/releases/0.7.1/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+  
+    <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
+    <script src="https://cdn.rawgit.com/archilogic-com/aframe-gblock/6498b71d/dist/gblock.js"></script>
+    
+
+<script>
+  
+  AFRAME.registerComponent('registerevents', {
+		init: function () {
+			var marker = this.el;
+      //console.log('marker', marker.object3D.children[1].visible=false);
+    
+      
+			marker.addEventListener('markerFound', function() {
+				var markerId = marker.id;
+        marker.object3D.children[1].visible=true;
+				//alert ("YEIH marker found");
+				// TODO: Add your own code here to react to the marker being found.
+			});
+      
+			marker.addEventListener('markerLost', function() {
+				var markerId = marker.id;
+        marker.object3D.children[1].visible=false;
+        //alert ("YEIH no marker");
+				//console.log('markerLost', markerId);
+				// TODO: Add your own code here to react to the marker being lost.
+			});
+		}
+	});
+  
+ 
+  clickLogo = function () {
+            document.getElementById("ui").style.display = "none";
+            var gadunk = $("gadunk");
+            gadunk.play();
+        }
+  </script>
+  
+
+
+  </head>
+  <body style="margin : 0px; overflow: hidden;">
+    
+    <audio id="gadunk">
+        <source src="https://cdn.glitch.com/ad895f42-2e37-478a-93ba-fccd72c31f08%2FgadunkBite.mp3?1547758844844" type="audio/mpeg">
+    </audio>
+    
+    <div id="ui" onclick="clickLogo()">
+        <!--<h1>Hello!<br />This is your VR title card.</h1>-->
+          <img src="https://cdn.glitch.com/34828522-1f62-4fd6-9641-607dd6c5b915%2Fflockar_tile_w.png?1547927992610"/>
+    </div>
+    
+    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3">
+      
+    <!-- create your content here. just a box for now 
+      <a-box position="0 0.5 0" material="opacity: 0.5;"></a-box>-->
+
+    <!-- define a camera which will move according to the marker position -->
+    <a-marker preset="hiro" id="marker-hiro" registerevents>
+    <!--<a-entity id="white_tower" position="0 0 0" gblock="https://poly.google.com/view/eCRz1gT97kK" scale="0.2 0.2 0.2" rotation="0 0 0"></a-entity>-->
+    </a-marker>
+      
+    <!--marker-->
+    <a-marker type="pattern" url="https://cdn.glitch.com/34828522-1f62-4fd6-9641-607dd6c5b915%2Fobject11.patt?1551891051610" registerevents>
+      
+    <!--<a-entity id="white_tower" position="0 0 0" gblock="https://poly.google.com/view/eCRz1gT97kK" scale="0.8 0.8 0.8" rotation="0 0 0">-->
+    <!--<a-entity id="dark_tower" position="0 0 0" gblock="https://poly.google.com/view/4qQvyq9pn3P" scale="50 50 50" rotation="-90 0 0">-->
+    <a-entity id="object11" position="0 0 0" gblock="https://poly.google.com/view/bBTCVuXCht6" scale="0.001 0.001 0.001" rotation="0 0 0">
+    <!-- scale A = B = C= Fat-->
+    <!--<a-entity id="white_tower" position="0 0 0" gblock="https://poly.google.com/view/eCRz1gT97kK" scale="0.6 0.6 1" rotation="0 0 0">-->
+    <!--<a-animation attribute="rotation" to="360 0 0" dur="5000" easing="linear" repeat="1"></a-animation>attribute="position" from="1 1 1" to="2 4 -8"-->
+    <!--<a-animation attribute="scale" from="30 30 30" to="140 140 140" dur="5000" easing="linear" repeat="0"></a-animation>-->
+    </a-entity>
+    
+    </a-marker>
+    <a-entity camera></a-entity>
+      
+  </a-scene>
+  </body>
+</html>
+
+
+
+  
